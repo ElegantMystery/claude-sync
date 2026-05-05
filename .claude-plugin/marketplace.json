@@ -13,8 +13,10 @@
         "name": "ysh"
       },
       "source": {
-        "source": "url",
-        "url": "https://raw.githubusercontent.com/ElegantMystery/claude-sync/main/.claude-plugin/marketplace.json"
+        "source": "git-subdir",
+        "url": "https://github.com/ElegantMystery/claude-sync",
+        "path": ".",
+        "ref": "main"
       },
       "homepage": "https://github.com/ysh/claude-sync"
     }
