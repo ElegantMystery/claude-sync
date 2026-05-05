@@ -10,7 +10,7 @@
       "name": "claude-sync",
       "description": "Sync and backup Claude Code settings, skills, commands, hooks, and agents to a version-controlled repository with automatic secret filtering",
       "author": {
-        "name": "ysh"
+        "name": "ElegantMystery"
       },
       "source": {
         "source": "git-subdir",
@@ -18,7 +18,7 @@
         "path": ".",
         "ref": "main"
       },
-      "homepage": "https://github.com/ysh/claude-sync"
+      "homepage": "https://github.com/ElegantMystery/claude-sync"
     }
   ]
 }
