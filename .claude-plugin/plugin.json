@@ -1,0 +1,9 @@
+{
+  "name": "claude-sync",
+  "version": "1.0.0",
+  "description": "Sync and backup Claude Code settings, skills, commands, hooks, and agents to a version-controlled repository with automatic secret filtering",
+  "author": {
+    "name": "ysh"
+  },
+  "homepage": "https://github.com/ysh/claude-sync"
+}

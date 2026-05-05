@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "local-sync",
+  "description": "Local claude-sync plugin for backup and sync",
+  "owner": {
+    "name": "MapoTofu"
+  },
+  "plugins": [
+    {
+      "name": "claude-sync",
+      "description": "Sync and backup Claude Code settings, skills, commands, hooks, and agents to a version-controlled repository with automatic secret filtering",
+      "author": {
+        "name": "ysh"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://raw.githubusercontent.com/ElegantMystery/claude-sync/main/.claude-plugin/marketplace.json"
+      },
+      "homepage": "https://github.com/ysh/claude-sync"
+    }
+  ]
+}
