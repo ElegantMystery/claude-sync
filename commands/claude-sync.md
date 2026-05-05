@@ -112,3 +112,5 @@ If sync fails:
 4. Check file permissions
 
 Report any errors to the user with actionable hints.
+
+exec: "python scripts/cli.py"
