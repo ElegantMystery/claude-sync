@@ -12,12 +12,7 @@
       "author": {
         "name": "ElegantMystery"
       },
-      "source": {
-        "source": "git-subdir",
-        "url": "https://github.com/ElegantMystery/claude-sync",
-        "path": ".",
-        "ref": "main"
-      },
+      "source": "./",
       "homepage": "https://github.com/ElegantMystery/claude-sync"
     }
   ]
