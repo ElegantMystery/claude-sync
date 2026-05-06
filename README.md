@@ -24,26 +24,26 @@ Sync and backup Claude Code configuration to a version-controlled repository wit
 
 ## Commands
 
+<!-- AUTO-GENERATED from commands/*.md -->
 | Command | Description |
 |---------|-------------|
+| `/sync:setup` | Set up sync — creates a private GitHub repo and initializes `~/dotfiles/claude` automatically |
 | `/sync:push` | Export `~/.claude` to `~/dotfiles/claude` and git push |
-| `/sync:pull` | Git pull latest dotfiles (no import) |
-| `/sync:apply` | Import from `~/dotfiles/claude` into `~/.claude` |
-| `/sync:status` | Show sync status and file count |
-| `/sync:list` | List all tracked components |
+| `/sync:pull` | Git pull latest dotfiles from remote (no import) |
+| `/sync:apply` | Apply synced config from `~/dotfiles/claude` into `~/.claude` |
+| `/sync:status` | Show sync status — components tracked, file count, and dotfiles repo state |
+| `/sync:list` | List all tracked components and their sync status |
+<!-- END AUTO-GENERATED -->
 
 ## Typical Workflow
 
-**First-time setup** (create a dotfiles repo):
+**First time — create your dotfiles repo:**
 
-```bash
-mkdir -p ~/dotfiles/claude
-cd ~/dotfiles/claude
-git init
-git remote add origin git@github.com:username/dotfiles.git
-git commit -m "Initial commit" --allow-empty
-git push -u origin HEAD
 ```
+/sync:setup
+```
+
+Claude will ask for a repo name, create a private GitHub repo, and push your current config automatically.
 
 **Daily — save your settings:**
 
@@ -66,6 +66,7 @@ git push -u origin HEAD
 
 ## What Gets Synced
 
+<!-- AUTO-GENERATED from scripts/filter.py -->
 | Component | Notes |
 |-----------|-------|
 | `skills/` | All skills |
@@ -74,6 +75,7 @@ git push -u origin HEAD
 | `rules/` | All rules |
 | `settings.json` | Filtered — secrets removed |
 | `keybindings.json` | Keyboard shortcuts |
+<!-- END AUTO-GENERATED -->
 
 **Never synced:**
 - `credentials.json` — API keys and tokens
@@ -88,6 +90,12 @@ Secret values are automatically filtered before export:
 - Bearer tokens and auth tokens
 - Credentials files
 - Session IDs
+
+## Requirements
+
+- [GitHub CLI (`gh`)](https://cli.github.com/) — required for `/sync:setup` and `/sync:push`/`/sync:pull`
+- Python 3.10+
+- Git
 
 ## License
 
