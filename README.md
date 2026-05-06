@@ -4,13 +4,19 @@ Sync and backup Claude Code configuration to a version-controlled repository wit
 
 ## Installation
 
-Install via the Claude Code plugin marketplace:
+**Step 1:** Add this repo as a marketplace source:
 
 ```
-/plugin install https://github.com/ElegantMystery/claude-sync
+/marketplace add ElegantMystery/claude-sync
 ```
 
-Then reload plugins:
+**Step 2:** Install the plugin:
+
+```
+/plugin install claude-sync
+```
+
+**Step 3:** Reload plugins:
 
 ```
 /reload-plugins
