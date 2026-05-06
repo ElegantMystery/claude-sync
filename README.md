@@ -13,7 +13,7 @@ Sync and backup Claude Code configuration to a version-controlled repository wit
 **Step 2:** Install the plugin:
 
 ```
-/plugin install claude-sync
+/plugin install sync
 ```
 
 **Step 3:** Reload plugins:
@@ -22,51 +22,72 @@ Sync and backup Claude Code configuration to a version-controlled repository wit
 /reload-plugins
 ```
 
-## Features
+## Commands
 
-- **Export**: Sync `.claude/` directory to a target backup folder
-- **Import**: Restore `.claude/` from a backup folder  
-- **Secret Filtering**: Automatically strips API keys, tokens, and credentials
-- **Selective Sync**: Choose which components to sync (settings, skills, commands, agents, rules, hooks)
-- **Dry Run**: Preview changes before applying
-- **Git Integration**: Optional git commit after sync
+| Command | Description |
+|---------|-------------|
+| `/sync:push` | Export `~/.claude` to `~/dotfiles/claude` and git push |
+| `/sync:pull` | Git pull latest dotfiles (no import) |
+| `/sync:apply` | Import from `~/dotfiles/claude` into `~/.claude` |
+| `/sync:status` | Show sync status and file count |
+| `/sync:list` | List all tracked components |
 
-## Usage
+## Typical Workflow
+
+**First-time setup** (create a dotfiles repo):
+
+```bash
+mkdir -p ~/dotfiles/claude
+cd ~/dotfiles/claude
+git init
+git remote add origin git@github.com:username/dotfiles.git
+git commit -m "Initial commit" --allow-empty
+git push -u origin HEAD
+```
+
+**Daily — save your settings:**
 
 ```
-/claude-sync --export --target ~/dotfiles/claude
-/claude-sync --import --source ~/dotfiles/claude
-/claude-sync --status
-/claude-sync --list
-/claude-sync --diff
+/sync:push
 ```
 
-## Components
+**On a new machine — restore your settings:**
 
-The plugin syncs these components:
-- `settings.json` (filtered - secrets removed)
-- `skills/` directory
-- `commands/` directory
-- `agents/` directory
-- `rules/` directory
-- `hooks/` configuration (from settings)
+```
+/sync:pull
+/sync:apply
+```
 
-## Components Excluded (Not Synced)
+**Preview before applying:**
 
-These contain sensitive data and are never synced:
-- API keys and tokens
-- Credentials files
-- Session history
-- Cache files
-- Telemetry data
+```
+/sync:apply --dry-run
+```
+
+## What Gets Synced
+
+| Component | Notes |
+|-----------|-------|
+| `skills/` | All skills |
+| `commands/` | All commands |
+| `agents/` | All agents |
+| `rules/` | All rules |
+| `settings.json` | Filtered — secrets removed |
+| `keybindings.json` | Keyboard shortcuts |
+
+**Never synced:**
+- `credentials.json` — API keys and tokens
+- `settings.local.json` — Local overrides
+- `history.jsonl` — Session history
+- `cache/`, `sessions/`, `telemetry/`, `backups/`
 
 ## Security
 
-All secret values are filtered before export:
-- API keys (sk-, ANTHROPIC_, MINIMAX_, etc.)
-- Bearer tokens
+Secret values are automatically filtered before export:
+- API keys (`sk-`, `ANTHROPIC_`, `MINIMAX_`, `OPENAI_`, etc.)
+- Bearer tokens and auth tokens
 - Credentials files
-- File paths and session IDs
+- Session IDs
 
 ## License
 
