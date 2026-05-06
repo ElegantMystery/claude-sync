@@ -298,7 +298,7 @@ def diff_config(source: Path, target: Path, verbose: bool = True):
     return True
 
 
-def status(claude_dir: Path = DEFAULT_CLAUDE_DIR, verbose: bool = True):
+def status(claude_dir: Path = DEFAULT_CLAUDE_DIR, target: Path | None = None, verbose: bool = True):
     """Show sync status."""
     if not claude_dir.exists():
         print(f"Error: {claude_dir} does not exist", file=sys.stderr)
@@ -321,6 +321,22 @@ def status(claude_dir: Path = DEFAULT_CLAUDE_DIR, verbose: bool = True):
     print(f"  Config directory: {claude_dir}")
     print(f"  Components: {existing}/{len(syncable)}")
     print(f"  Total files: ~{total}")
+
+    # Check dotfiles repo
+    dotfiles_dir = target or Path.home() / 'dotfiles' / 'claude'
+    print(f"\n  Dotfiles repo:    {dotfiles_dir}")
+    if not dotfiles_dir.exists():
+        print(f"  Git repo:         ✗ directory not found — run /sync:setup")
+    else:
+        rc, _, _ = run_git(['git', 'rev-parse', '--git-dir'], dotfiles_dir)
+        if rc != 0:
+            print(f"  Git repo:         ✗ not initialized — run /sync:setup")
+        else:
+            rc2, remote, _ = run_git(['git', 'remote', 'get-url', 'origin'], dotfiles_dir)
+            if rc2 != 0:
+                print(f"  Git repo:         ✓ initialized (no remote set)")
+            else:
+                print(f"  Git repo:         ✓ {remote.strip()}")
 
     return True
 
@@ -354,7 +370,7 @@ def main():
         return list_components(args.claude_dir, verbose)
 
     if args.status:
-        return status(args.claude_dir, verbose)
+        return status(args.claude_dir, args.target, verbose)
 
     if args.diff:
         if not args.target:
@@ -381,7 +397,7 @@ def main():
         return import_claude_config(args.source, args.claude_dir, args.dry_run, verbose)
 
     # Default: show status
-    return status(args.claude_dir, verbose)
+    return status(args.claude_dir, args.target, verbose)
 
 
 if __name__ == '__main__':
