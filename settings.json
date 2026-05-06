@@ -1,0 +1,14 @@
+{
+  "enabledPlugins": {
+    "sync@ElegantMystery": true
+  },
+  "extraKnownMarketplaces": {
+    "ElegantMystery": {
+      "source": {
+        "source": "github",
+        "repo": "ElegantMystery/claude-sync"
+      }
+    }
+  },
+  "theme": "dark"
+}
