@@ -43,7 +43,7 @@ Sync and backup Claude Code configuration to a version-controlled repository wit
 /sync:setup
 ```
 
-Claude will ask whether to create a new private GitHub repo or link an existing one, then push your current config automatically.
+Claude will ask whether to create a new private GitHub repo or link an existing one. Run `/sync:push` after to save your config.
 
 **Daily — save your settings:**
 
