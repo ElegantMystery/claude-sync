@@ -1,28 +1,40 @@
 ---
-description: Set up a git repo for syncing Claude Code config. Asks for a remote URL and initializes ~/dotfiles/claude.
-argument-hint: [--remote <git-url>] [--target <path>]
+description: Set up Claude Code config sync — creates a private GitHub repo and initializes ~/dotfiles/claude automatically.
+argument-hint: [--repo-name <name>]
 allowed-tools: [Bash]
 ---
 
 # Setup Claude Sync
 
-Help the user set up a git repository to sync their Claude Code config.
+Guide the user through first-time setup by creating a private GitHub repo and initializing the local dotfiles directory.
 
 ## Steps
 
-1. If the user did not provide a `--remote` URL in $ARGUMENTS, ask them:
-   > What is your git remote URL? (e.g. `git@github.com:username/dotfiles.git`)
+1. If the user did not provide a repo name in $ARGUMENTS, ask them:
+   > What would you like to name your dotfiles repo? (e.g. `dotfiles` or `claude-config`)
 
-2. Once you have the remote URL, run:
+2. Create a private GitHub repo with that name:
 
 ```bash
-python3 "$(find ~/.claude/plugins -name "cli.py" -path "*/sync*" 2>/dev/null | head -1)" --init --remote <REMOTE_URL> --target ~/dotfiles/claude
+gh repo create <REPO_NAME> --private --description "Claude Code configuration backup"
 ```
 
-3. Then export their current config and push:
+3. Get the SSH remote URL:
+
+```bash
+gh repo view <REPO_NAME> --json sshUrl --jq '.sshUrl'
+```
+
+4. Initialize the local repo and push using the URL from step 3:
+
+```bash
+python3 "$(find ~/.claude/plugins -name "cli.py" -path "*/sync*" 2>/dev/null | head -1)" --init --remote <SSH_URL> --target ~/dotfiles/claude
+```
+
+5. Export current Claude config and push:
 
 ```bash
 python3 "$(find ~/.claude/plugins -name "cli.py" -path "*/sync*" 2>/dev/null | head -1)" --export --target ~/dotfiles/claude --push
 ```
 
-4. Tell the user setup is complete and they can now use `/sync:push` daily.
+6. Tell the user setup is complete. Show them the repo URL and that they can now use `/sync:push` to save settings anytime.
