@@ -9,3 +9,5 @@ Run immediately with the user's arguments (default target is ~/dotfiles/claude):
 ```bash
 python3 "$(find ~/.claude/plugins -name "cli.py" -path "*/sync*" 2>/dev/null | head -1)" --export --target ~/dotfiles/claude --push $ARGUMENTS
 ```
+
+If this fails with "not a git repository", tell the user to run `/sync:setup` first to initialize their dotfiles repo.
