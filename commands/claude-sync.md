@@ -8,6 +8,14 @@ allowed-tools: [Bash, Read]
 
 Sync and backup Claude Code settings, skills, commands, hooks, and agents.
 
+## Direct Script Execution
+
+When the user invokes `/claude-sync` with any arguments, immediately run:
+
+```bash
+python3 "$(find ~/.claude/plugins -name "cli.py" -path "*/claude-sync*" 2>/dev/null | head -1)" $ARGUMENTS
+```
+
 ## Arguments
 
 User invoked with: $ARGUMENTS
@@ -112,5 +120,3 @@ If sync fails:
 4. Check file permissions
 
 Report any errors to the user with actionable hints.
-
-exec: "python scripts/cli.py"
