@@ -2,7 +2,11 @@
 
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+
+SCRIPTS_DIR_PATH = Path(__file__).parent.parent / "scripts"
+sys.path.insert(0, str(SCRIPTS_DIR_PATH))
 
 # Get the scripts directory path
 SCRIPTS_DIR = Path(__file__).parent.parent / "scripts"
@@ -152,6 +156,66 @@ class TestCliArgumentPassthrough:
         assert "unrecognized arguments: --pull" not in result.stderr
         assert "unrecognized arguments: --import" not in result.stderr
         assert "unrecognized arguments: --source" not in result.stderr
+
+
+class TestImportClaudeConfig:
+    """Tests for import_claude_config — specifically file vs directory components."""
+
+    def test_imports_file_component(self):
+        """import_claude_config must use copy2 for file components like settings.json."""
+        from sync import import_claude_config
+
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source"
+            target = Path(tmp) / "target"
+            source.mkdir()
+            target.mkdir()
+
+            # Simulate a synced settings.json file in the dotfiles repo
+            (source / "settings.json").write_text('{"theme": "dark"}')
+
+            result = import_claude_config(source, target, dry_run=False, verbose=False)
+
+            assert result is True
+            assert (target / "settings.json").exists()
+            assert (target / "settings.json").read_text() == '{"theme": "dark"}'
+
+    def test_imports_directory_component(self):
+        """import_claude_config must use copytree for directory components like skills/."""
+        from sync import import_claude_config
+
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source"
+            target = Path(tmp) / "target"
+            source.mkdir()
+            target.mkdir()
+
+            skills_dir = source / "skills"
+            skills_dir.mkdir()
+            (skills_dir / "my-skill.md").write_text("# skill")
+
+            result = import_claude_config(source, target, dry_run=False, verbose=False)
+
+            assert result is True
+            assert (target / "skills" / "my-skill.md").exists()
+
+    def test_overwrites_existing_file_component(self):
+        """import_claude_config replaces an existing file component without error."""
+        from sync import import_claude_config
+
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source"
+            target = Path(tmp) / "target"
+            source.mkdir()
+            target.mkdir()
+
+            (source / "settings.json").write_text('{"new": true}')
+            (target / "settings.json").write_text('{"old": true}')
+
+            result = import_claude_config(source, target, dry_run=False, verbose=False)
+
+            assert result is True
+            assert (target / "settings.json").read_text() == '{"new": true}'
 
 
 class TestCliErrorHandling:

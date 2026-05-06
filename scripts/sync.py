@@ -253,7 +253,10 @@ def import_claude_config(source: Path, target: Path, dry_run: bool = False, verb
                     shutil.rmtree(dst_path)
                 else:
                     dst_path.unlink()
-            shutil.copytree(src_path, dst_path)
+            if src_path.is_dir():
+                shutil.copytree(src_path, dst_path)
+            else:
+                shutil.copy2(src_path, dst_path)
         files_imported.append(component)
 
     if verbose:
