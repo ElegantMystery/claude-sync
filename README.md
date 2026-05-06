@@ -27,7 +27,7 @@ Sync and backup Claude Code configuration to a version-controlled repository wit
 <!-- AUTO-GENERATED from commands/*.md -->
 | Command | Description |
 |---------|-------------|
-| `/sync:setup` | Set up sync — creates a private GitHub repo and initializes `~/dotfiles/claude` automatically |
+| `/sync:setup` | Set up sync — choose to create a new private GitHub repo or link an existing one |
 | `/sync:push` | Export `~/.claude` to `~/dotfiles/claude` and git push |
 | `/sync:pull` | Git pull latest dotfiles from remote (no import) |
 | `/sync:apply` | Apply synced config from `~/dotfiles/claude` into `~/.claude` |
@@ -43,7 +43,7 @@ Sync and backup Claude Code configuration to a version-controlled repository wit
 /sync:setup
 ```
 
-Claude will ask for a repo name, create a private GitHub repo, and push your current config automatically.
+Claude will ask whether to create a new private GitHub repo or link an existing one, then push your current config automatically.
 
 **Daily — save your settings:**
 
