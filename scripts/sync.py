@@ -100,6 +100,48 @@ def export_claude_config(source: Path, target: Path, dry_run: bool = False, verb
     return True
 
 
+def git_init(target: Path, remote: str | None = None, verbose: bool = True) -> bool:
+    """Initialize a git repo at target, optionally add a remote and push."""
+    target.mkdir(parents=True, exist_ok=True)
+
+    rc, _, _ = run_git(['git', 'rev-parse', '--git-dir'], target)
+    if rc == 0:
+        print(f"{target} is already a git repository")
+        return True
+
+    rc, _, stderr = run_git(['git', 'init', '-b', 'main'], target)
+    if rc != 0:
+        print(f"Error during git init: {stderr}", file=sys.stderr)
+        return False
+
+    if verbose:
+        print(f"Initialized git repository at {target}")
+
+    if remote:
+        rc, _, stderr = run_git(['git', 'remote', 'add', 'origin', remote], target)
+        if rc != 0:
+            print(f"Error adding remote: {stderr}", file=sys.stderr)
+            return False
+        if verbose:
+            print(f"Remote set to {remote}")
+
+    # Initial empty commit so the branch exists
+    rc, _, stderr = run_git(['git', 'commit', '--allow-empty', '-m', 'Initial commit'], target)
+    if rc != 0:
+        print(f"Error during initial commit: {stderr}", file=sys.stderr)
+        return False
+
+    if remote:
+        rc, _, stderr = run_git(['git', 'push', '-u', 'origin', 'main'], target)
+        if rc != 0:
+            print(f"Error during initial push: {stderr}", file=sys.stderr)
+            return False
+        if verbose:
+            print("Pushed to remote — ready to use /sync:push")
+
+    return True
+
+
 def git_push(target: Path, message: str | None = None, verbose: bool = True) -> bool:
     """Git add, commit, and push to remote."""
     if not target.exists():
@@ -296,11 +338,17 @@ def main():
     parser.add_argument('--list', action='store_true', help='List all components')
     parser.add_argument('--diff', action='store_true', help='Show differences')
     parser.add_argument('--status', action='store_true', help='Show sync status')
+    parser.add_argument('--init', action='store_true', help='Initialize git repo at target directory')
+    parser.add_argument('--remote', type=str, help='Remote URL for --init')
     parser.add_argument('--quiet', action='store_true', help='Suppress output')
 
     args = parser.parse_args()
 
     verbose = not args.quiet
+
+    if args.init:
+        target = args.target or Path.home() / 'dotfiles' / 'claude'
+        return git_init(target, args.remote, verbose)
 
     if args.list:
         return list_components(args.claude_dir, verbose)
