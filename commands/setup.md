@@ -62,12 +62,6 @@ Wait for the user's response. Use the pasted URL as `<REMOTE_URL>` in Step 4.
 python3 "$(find ~/.claude/plugins -name "cli.py" -path "*/sync*" 2>/dev/null | head -1)" --init --remote <REMOTE_URL> --target ~/dotfiles/claude
 ```
 
-## Step 5: Export config and push
+## Step 5: Confirm
 
-```bash
-python3 "$(find ~/.claude/plugins -name "cli.py" -path "*/sync*" 2>/dev/null | head -1)" --export --target ~/dotfiles/claude --push
-```
-
-## Step 6: Confirm
-
-Tell the user setup is complete, show the repo URL, and remind them to use `/sync:push` to save settings anytime.
+Tell the user setup is complete, show the repo URL, and remind them to run `/sync:push` whenever they want to save their settings.
