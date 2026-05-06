@@ -64,6 +64,24 @@ Claude will ask whether to create a new private GitHub repo or link an existing 
 /sync:apply --dry-run
 ```
 
+## Branch Behavior
+
+Push and pull always operate on the **currently checked-out branch** in `~/dotfiles/claude`, which is `main` by default after setup.
+
+To maintain separate configs per machine or profile, create and check out a branch in your dotfiles repo before syncing:
+
+```bash
+git -C ~/dotfiles/claude checkout -b work
+/sync:push   # pushes to the 'work' branch
+```
+
+```bash
+git -C ~/dotfiles/claude checkout main
+/sync:push   # pushes to 'main'
+```
+
+Any branch name works — just check out the target branch in `~/dotfiles/claude` before running `/sync:push` or `/sync:pull`.
+
 ## What Gets Synced
 
 <!-- AUTO-GENERATED from scripts/filter.py -->
