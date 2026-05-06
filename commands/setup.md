@@ -6,35 +6,46 @@ allowed-tools: [Bash]
 
 # Setup Claude Sync
 
-Guide the user through first-time setup by creating a private GitHub repo and initializing the local dotfiles directory.
+## Step 1: Check current state
 
-## Steps
+First, check if the dotfiles repo is already initialized:
 
-1. If the user did not provide a repo name in $ARGUMENTS, ask them:
-   > What would you like to name your dotfiles repo? (e.g. `dotfiles` or `claude-config`)
+```bash
+python3 "$(find ~/.claude/plugins -name "cli.py" -path "*/sync*" 2>/dev/null | head -1)" --status
+```
 
-2. Create a private GitHub repo with that name:
+- If the output shows `Git repo: ✓` — tell the user they are already set up and stop here.
+- If the output shows `Git repo: ✗` — continue to Step 2.
+
+## Step 2: Ask for repo name
+
+Ask the user:
+> Your dotfiles repo is not set up yet. What would you like to name it? (e.g. `dotfiles` or `claude-config`)
+
+## Step 3: Create private GitHub repo
 
 ```bash
 gh repo create <REPO_NAME> --private --description "Claude Code configuration backup"
 ```
 
-3. Get the SSH remote URL:
+## Step 4: Get SSH remote URL
 
 ```bash
 gh repo view <REPO_NAME> --json sshUrl --jq '.sshUrl'
 ```
 
-4. Initialize the local repo and push using the URL from step 3:
+## Step 5: Initialize local repo and push
 
 ```bash
 python3 "$(find ~/.claude/plugins -name "cli.py" -path "*/sync*" 2>/dev/null | head -1)" --init --remote <SSH_URL> --target ~/dotfiles/claude
 ```
 
-5. Export current Claude config and push:
+## Step 6: Export config and push
 
 ```bash
 python3 "$(find ~/.claude/plugins -name "cli.py" -path "*/sync*" 2>/dev/null | head -1)" --export --target ~/dotfiles/claude --push
 ```
 
-6. Tell the user setup is complete. Show them the repo URL and that they can now use `/sync:push` to save settings anytime.
+## Step 7: Confirm
+
+Tell the user setup is complete, show the repo URL, and remind them to use `/sync:push` to save settings anytime.
