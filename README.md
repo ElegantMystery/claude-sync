@@ -64,6 +64,16 @@ Claude will ask whether to create a new private GitHub repo or link an existing 
 /sync:apply --dry-run
 ```
 
+## Branch Behavior
+
+Push and pull operate on `main` by default. Pass `--branch <name>` to sync to a specific branch — useful for keeping per-machine or per-profile configs:
+
+```
+/sync:push --branch work      # push to 'work' branch (created if missing)
+/sync:pull --branch work      # pull and switch to 'work' branch
+/sync:push                    # push to 'main' (default)
+```
+
 ## What Gets Synced
 
 <!-- AUTO-GENERATED from scripts/filter.py -->

@@ -142,7 +142,7 @@ def git_init(target: Path, remote: str | None = None, verbose: bool = True) -> b
     return True
 
 
-def git_push(target: Path, message: str | None = None, verbose: bool = True) -> bool:
+def git_push(target: Path, message: str | None = None, branch: str | None = None, verbose: bool = True) -> bool:
     """Git add, commit, and push to remote."""
     if not target.exists():
         print(f"Error: Target directory {target} does not exist", file=sys.stderr)
@@ -154,6 +154,17 @@ def git_push(target: Path, message: str | None = None, verbose: bool = True) -> 
         print(f"Error: {target} is not a git repository", file=sys.stderr)
         print("Run: cd TARGET && git init && git remote add origin URL", file=sys.stderr)
         return False
+
+    # Switch to the requested branch if specified
+    if branch:
+        rc, existing, _ = run_git(['git', 'branch', '--list', branch], target)
+        if existing.strip():
+            rc, _, stderr = run_git(['git', 'checkout', branch], target)
+        else:
+            rc, _, stderr = run_git(['git', 'checkout', '-b', branch], target)
+        if rc != 0:
+            print(f"Error switching to branch '{branch}': {stderr}", file=sys.stderr)
+            return False
 
     # Git add
     rc, _, stderr = run_git(['git', 'add', '-A'], target)
@@ -179,18 +190,19 @@ def git_push(target: Path, message: str | None = None, verbose: bool = True) -> 
         print(f"Committed: {msg}")
 
     # Git push
-    rc, _, stderr = run_git(['git', 'push', '-u', 'origin', 'HEAD'], target)
+    ref = branch or 'HEAD'
+    rc, _, stderr = run_git(['git', 'push', '-u', 'origin', ref], target)
     if rc != 0:
         print(f"Error during git push: {stderr}", file=sys.stderr)
         return False
 
     if verbose:
-        print("Pushed to remote")
+        print(f"Pushed to remote{f' ({branch})' if branch else ''}")
 
     return True
 
 
-def git_pull(source: Path, verbose: bool = True) -> bool:
+def git_pull(source: Path, branch: str | None = None, verbose: bool = True) -> bool:
     """Git pull from remote to source directory."""
     if not source.exists():
         print(f"Error: Source directory {source} does not exist", file=sys.stderr)
@@ -212,14 +224,26 @@ def git_pull(source: Path, verbose: bool = True) -> bool:
             print(f"Error during git stash: {stderr}", file=sys.stderr)
             return False
 
+    # Switch to the requested branch if specified
+    if branch:
+        rc, _, stderr = run_git(['git', 'fetch', 'origin'], source)
+        if rc != 0:
+            print(f"Error during git fetch: {stderr}", file=sys.stderr)
+            return False
+        rc, _, stderr = run_git(['git', 'checkout', '-B', branch, f'origin/{branch}'], source)
+        if rc != 0:
+            print(f"Error switching to branch '{branch}': {stderr}", file=sys.stderr)
+            return False
+
     # Git pull
-    rc, _, stderr = run_git(['git', 'pull', '--rebase', 'origin', 'HEAD'], source)
+    ref = branch or 'HEAD'
+    rc, _, stderr = run_git(['git', 'pull', '--rebase', 'origin', ref], source)
     if rc != 0:
         print(f"Error during git pull: {stderr}", file=sys.stderr)
         return False
 
     if verbose:
-        print("Pulled from remote")
+        print(f"Pulled from remote{f' ({branch})' if branch else ''}")
 
     return True
 
@@ -359,6 +383,7 @@ def main():
     parser.add_argument('--status', action='store_true', help='Show sync status')
     parser.add_argument('--init', action='store_true', help='Initialize git repo at target directory')
     parser.add_argument('--remote', type=str, help='Remote URL for --init')
+    parser.add_argument('--branch', type=str, help='Git branch to push/pull (default: current branch)')
     parser.add_argument('--quiet', action='store_true', help='Suppress output')
 
     args = parser.parse_args()
@@ -387,7 +412,7 @@ def main():
             return False
         success = export_claude_config(args.claude_dir, args.target, args.dry_run, verbose)
         if success and args.push and not args.dry_run:
-            return git_push(args.target, verbose=verbose)
+            return git_push(args.target, branch=args.branch, verbose=verbose)
         return success
 
     if args.import_config:
@@ -395,7 +420,7 @@ def main():
             print("Error: --import requires --source", file=sys.stderr)
             return False
         if args.pull and not args.dry_run:
-            if not git_pull(args.source, verbose=verbose):
+            if not git_pull(args.source, branch=args.branch, verbose=verbose):
                 return False
         return import_claude_config(args.source, args.claude_dir, args.dry_run, verbose)
 
