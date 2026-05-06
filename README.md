@@ -2,6 +2,20 @@
 
 Sync and backup Claude Code configuration to a version-controlled repository with automatic secret filtering.
 
+## Installation
+
+Install via the Claude Code plugin marketplace:
+
+```
+/plugin install https://github.com/ElegantMystery/claude-sync
+```
+
+Then reload plugins:
+
+```
+/reload-plugins
+```
+
 ## Features
 
 - **Export**: Sync `.claude/` directory to a target backup folder
